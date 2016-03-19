@@ -6,76 +6,79 @@
 #include <iostream>
 #include <vector>
 
-#define CARBON_WEIGHT    12.01
-#define HYDROGEN_WEIGHT  1.008
-#define OXYGEN_WEIGHT    16.00
-#define NITROGEN_WEIGHT  14.01
-
 using namespace std;
 
-void main() {
-    int num_test_cases = 0;
+double get_atomic_weight(char atom) {
+    switch (atom)
+    {
+    case 'C': 
+    	return 12.01;
+    case 'H': 
+        return 1.008;
+    case 'O': 
+        return 16.00;
+    case 'N': 
+        return 14.01;
+    default :
+        return 0.0;
+    }
+}
+
+int main() {
+    vector<double> results;
+    
+    unsigned int num_test_cases = 0;
     cin >> num_test_cases;
 
-    vector<double> results;
-
+    // loop through test cases
     while(num_test_cases--) {
-        string test_case;
+        string test_case = "";
         cin >> test_case;
 
         double total = 0;
-        unsigned int count = 0;
-        char atom;
+        const char *p_atom = test_case.c_str();
+        const char *p_count = NULL;
 
-        for(unsigned int i = 0; i < test_case.length();) {
-            const char *p_atom = &(test_case[i]);
-            const char *p_count = NULL;
+        // loop through the input string for a single test case
+        while((unsigned)(p_atom - test_case.c_str()) < test_case.length()) {
+            if(isalpha(*p_atom)) {
+                char atom = test_case[p_atom - test_case.c_str()];
+                unsigned int count = 0;
+                p_count = p_atom+1;
 
-            if(isalpha(test_case[i])) {
-                atom = test_case[i];
-                p_count = p_atom + 1;
-                
-                if(isalpha(*p_count) || ((p_count - p_atom) >= test_case.length())) {
-                    count = 1;
-                    i++;
-                    p_count = NULL;
-                }
-                else {
+                if(isdigit(*p_count)) {
                     while(isdigit(*p_count)) {
                         p_count++;
                     }
-
-                    i = p_count - test_case.c_str();
-                    
+                    const char *p_next_atom = p_count;
                     p_count--;
+
                     unsigned int base = 1;
                     while(p_count > p_atom) {
-                        count = count + (((*p_count)-'0') * base);
+                        count += ((*p_count - '0') * base);
                         base *= 10;
                         p_count--;
                     }
+
+                    p_atom = p_next_atom;
+                    p_next_atom = NULL;
+                    p_count = NULL;
+                }
+                else {
+                    count = 1;
+                    p_atom++;
+                    p_count = NULL;
                 }
 
-                if(atom == 'C') {
-                    total = total + (CARBON_WEIGHT * count);
-                }
-                else if(atom == 'H') {
-                    total = total + (HYDROGEN_WEIGHT * count);
-                }
-                else if(atom == 'O') {
-                    total = total + (OXYGEN_WEIGHT * count);
-                }
-                else if(atom == 'N') {
-                    total = total + (NITROGEN_WEIGHT * count);
-                }
-
-                results.push_back(total);
+                total += count * get_atomic_weight(atom);
             }
         }
+
+        results.push_back(total);
     }
 
-    for (vector<double>::iterator it = results.begin(); it != results.end(); it++)
-    {
-        cout << *it << endl;
+    for(vector<double>::iterator it = results.begin(); it != results.end(); it++) {
+        cout.precision(3);
+        cout << fixed << *it << endl;
     }
 }
