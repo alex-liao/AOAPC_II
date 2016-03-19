@@ -1,5 +1,6 @@
 // Author: pcmaniac23
 // Date: 05/03/2016
+// Problem source: https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=830&page=show_problem&problem=4460
 
 #include <string>
 #include <iostream>
